@@ -4,7 +4,8 @@ import ItemContainer from './ItemContainer'
 const mapStateToProps = (state, ownProps) => {
 	return {
 		id: state.root,
-		depth: 0
+		depth: 0,
+		parent: null
 	}
 }
 

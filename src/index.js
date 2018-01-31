@@ -5,14 +5,10 @@ import { createStore } from 'redux'
 import listApp from './reducers'
 import App from './components/App'
 
-const store = createStore(listApp)
-
-store.subscribe(() => {
-	console.log(store.getState())
-})
+let store = createStore(listApp)
 
 render(
-	<Provider store={store}>
+  <Provider store={store}>
     <App />
   </Provider>,
   document.getElementById('root')

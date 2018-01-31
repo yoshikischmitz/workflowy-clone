@@ -1,9 +1,13 @@
 import React from 'react'
 
-const Item = ({id, content, children, depth}) => {
+const Item = ({id, content, children, depth, handleKeyDown}) => {
 	return(
-		<div style={{"padding-left": (depth * 0.3) + 'em' }}>
-			<div className="itemListContent">
+		<div style={{paddingLeft: (depth * 0.3) + 'em' }}>
+			<div 
+				className="itemListContent" 
+				ref={function(e){if(e != null) e.contentEditable=true;}} 
+				onKeyDown={handleKeyDown}
+			>
 			   { content }
 			</div>
 			<div className="itemListChildren">
