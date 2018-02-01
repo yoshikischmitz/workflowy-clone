@@ -4,7 +4,7 @@ const Item = ({id, content, children, depth, handleKeyDown}) => {
 	return(
 		<div style={{paddingLeft: (depth * 0.3) + 'em' }}>
 			<div 
-				className="itemListContent" 
+				className="itemListEditor" 
 				ref={function(e){if(e != null) e.contentEditable=true;}} 
 				onKeyDown={handleKeyDown}
 			>

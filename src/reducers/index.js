@@ -7,10 +7,10 @@ function listItem(content){
 	}
 }
 
-function insertAfter(arr, findObj, insertObj){
+function insertAt(arr, findObj, insertObj, offset){
 	const index = arr.indexOf(findObj)
-	const left = arr.slice(0, index + 1)
-	const right = arr.slice(index + 1, arr.length)
+	const left = arr.slice(0, index + offset)
+	const right = arr.slice(index + offset, arr.length)
 	const newArr = left.concat([insertObj], right)
 	return newArr
 }
@@ -34,7 +34,10 @@ function generateInitialState(){
 		root: root.id,
 		itemOnItems:{
 			[root.id]: [child.id, child2.id],
-			[child.id]: [subChild.id, subSubChild.id]
+			[child.id]: [subChild.id, subSubChild.id],
+			[child2.id]: [],
+			[subChild.id]: [],
+			[subSubChild.id]: []
 		}
 	}
 }
@@ -67,11 +70,17 @@ function listApp(state = initialState, action){
 				[newItemBottom.id]: newItemBottom
 			}
 
-			const updateParentItemOnItems = insertAfter(state.itemOnItems[parent], id, newItemBottom.id)
-			const itemOnItemsUpdate = Object.assign({}, state.itemOnItems, {[parent]: updateParentItemOnItems})
-
-			itemOnItemsUpdate[newItemBottom.id] = itemOnItemsUpdate[id]
-			itemOnItemsUpdate[id] = []
+			let itemOnItemsUpdate
+			if(right.length === 0){
+				const itemsOfItem = state.itemOnItems[id]
+				const updateChildItemOnItems = insertAt(itemsOfItem, itemsOfItem[0], newItemBottom.id, 0)
+				itemOnItemsUpdate = Object.assign({}, state.itemOnItems, {[id]: updateChildItemOnItems}, {[newItemBottom.id]: []})
+			} else {
+				const updateParentItemOnItems = insertAt(state.itemOnItems[parent], id, newItemBottom.id, 1)
+				itemOnItemsUpdate = Object.assign({}, state.itemOnItems, {[parent]: updateParentItemOnItems})
+				itemOnItemsUpdate[newItemBottom.id] = itemOnItemsUpdate[id]
+				itemOnItemsUpdate[id] = []
+			}
 
 			const newItems =  Object.assign({}, state.items, itemsUpdate)
 			return Object.assign({}, state, {items: newItems}, {itemOnItems: itemOnItemsUpdate})

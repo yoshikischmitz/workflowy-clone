@@ -5,7 +5,10 @@ import { createStore } from 'redux'
 import listApp from './reducers'
 import App from './components/App'
 
-let store = createStore(listApp)
+const store = createStore(
+   listApp, /* preloadedState, */
+   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+ );
 
 render(
   <Provider store={store}>
