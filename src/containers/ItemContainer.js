@@ -14,7 +14,14 @@ function handleKeyDown(e, props) {
 				parent: props.parent
 			}
 		default:
-			return null
+			const action =  {
+				type: 'EDIT_ITEM',
+				id: props.id,
+				content: e.target.textContent,
+				cursorPosition: offset
+			}
+			console.log(e.target.textContent)
+			return action
 	}
 }
 

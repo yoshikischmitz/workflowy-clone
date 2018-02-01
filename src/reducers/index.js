@@ -46,9 +46,9 @@ const initialState = generateInitialState()
 
 
 function listApp(state = initialState, action){
+  const id = action.id
 	switch(action.type){
 	case('ADD_ITEM'):
-			const id = action.id
 			const parent = action.parent
 			const cursorPosition = action.cursorPosition
 			const originalItem = state.items[id]
@@ -71,7 +71,10 @@ function listApp(state = initialState, action){
 			}
 
 			let itemOnItemsUpdate
-			if(right.length === 0){
+
+			const currentItemChildrenCount = state.itemOnItems[id].length
+
+			if(right.length === 0 && currentItemChildrenCount > 0){
 				const itemsOfItem = state.itemOnItems[id]
 				const updateChildItemOnItems = insertAt(itemsOfItem, itemsOfItem[0], newItemBottom.id, 0)
 				itemOnItemsUpdate = Object.assign({}, state.itemOnItems, {[id]: updateChildItemOnItems}, {[newItemBottom.id]: []})
@@ -84,6 +87,14 @@ function listApp(state = initialState, action){
 
 			const newItems =  Object.assign({}, state.items, itemsUpdate)
 			return Object.assign({}, state, {items: newItems}, {itemOnItems: itemOnItemsUpdate})
+  case('EDIT_ITEM'):
+			const newContent = action.content
+			const itemEditUpdate = {
+				[id]: {content: newContent, id: id}
+			}
+
+			const itemsEditUpdate = Object.assign({}, state.items, itemEditUpdate)
+			return Object.assign({}, state, {items: itemsEditUpdate})
 	default:
 			return state
 	}
