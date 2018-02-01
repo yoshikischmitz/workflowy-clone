@@ -21,9 +21,10 @@ function generateInitialState(){
 	let child2 = listItem("レベル１")
 	let subChild = listItem("レベル２")
 	let subSubChild = listItem("レベル２")
+	let subSubSubChild = listItem("レベル３")
 
 	let map = {}
-	let items = [root, child, child2, subChild, subSubChild]
+	let items = [root, child, child2, subChild, subSubChild, subSubSubChild]
 
   items.forEach((item) => {
 		map[item.id] = item
@@ -32,12 +33,14 @@ function generateInitialState(){
 	return {
 		items: map,
 		root: root.id,
+		focus: {id: root.id, cursorPosition: 0},
 		itemOnItems:{
 			[root.id]: [child.id, child2.id],
 			[child.id]: [subChild.id, subSubChild.id],
 			[child2.id]: [],
 			[subChild.id]: [],
-			[subSubChild.id]: []
+			[subSubChild.id]: [subSubSubChild.id],
+			[subSubSubChild.id]: []
 		}
 	}
 }
@@ -86,15 +89,18 @@ function listApp(state = initialState, action){
 			}
 
 			const newItems =  Object.assign({}, state.items, itemsUpdate)
-			return Object.assign({}, state, {items: newItems}, {itemOnItems: itemOnItemsUpdate})
+			const focusUpdate = {focus: {id: newItemBottom.id, cursorPosition: 0}}
+			return Object.assign({}, state, {items: newItems}, {itemOnItems: itemOnItemsUpdate}, focusUpdate)
   case('EDIT_ITEM'):
-			const newContent = action.content
+			//const content = state.items[id].content
+			//const offset = action.cursorPosition
+			//const newContent = content.slice(0, offset) + action.char + content.slice(offset, content.length)
 			const itemEditUpdate = {
-				[id]: {content: newContent, id: id}
+				[id]: {content: action.content, id: id}
 			}
-
 			const itemsEditUpdate = Object.assign({}, state.items, itemEditUpdate)
-			return Object.assign({}, state, {items: itemsEditUpdate})
+
+			return Object.assign({}, state, {items: itemsEditUpdate}, {focus: {id: id, cursorPosition: action.cursorPosition }})
 	default:
 			return state
 	}

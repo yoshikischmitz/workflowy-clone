@@ -2,10 +2,19 @@ import React from 'react'
 import RootItem from '../containers/RootItem'
 import '../App.css'
 
-let App = () => (
-	<div>
-		<RootItem />
-	</div>
-)
+export default class App extends React.Component{
+	componentDidUpdate(){
+		console.log("got called")
+	}
+	constructor(props){
+		super(props)
+	}
 
-export default App
+	render(){
+		return(
+			<div>
+				<RootItem />
+			</div>
+		)
+	}
+}

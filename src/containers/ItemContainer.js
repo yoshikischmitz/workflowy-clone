@@ -14,13 +14,13 @@ function handleKeyDown(e, props) {
 				parent: props.parent
 			}
 		default:
+			const text = e.target.innerText
 			const action =  {
 				type: 'EDIT_ITEM',
 				id: props.id,
-				content: e.target.textContent,
+				content: e.target.innerText,
 				cursorPosition: offset
 			}
-			console.log(e.target.textContent)
 			return action
 	}
 }
@@ -35,17 +35,24 @@ const mapStateToProps = (state, ownProps) => {
 			<ItemContainer key={childId} parent={id} id={childId} depth={depth}/>
 	))
 
-	return {
+	const myProps = {
 		id: ownProps.id,
 		content: item.content,
 		children: childNodes
 	}
+
+	if(state.focus.id === id){
+		myProps.focus = state.focus.cursorPosition
+	}
+
+	return myProps
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
 	return {
-		handleKeyDown: (e) =>{
-			const action = handleKeyDown(e, ownProps)
+		handleKeyDown: (e, value) =>{
+		  const action = handleKeyDown(e, ownProps)
+
 			if(action){
 				dispatch(action)
 			}

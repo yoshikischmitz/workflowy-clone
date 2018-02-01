@@ -1,3 +1,9 @@
 .itemListEditor{
   min-height: 1.2em;
 }
+
+.itemListChildren{
+  border-left: 1px solid #eee;
+  margin-left: 10px;
+  padding-left: 15px;
+}
