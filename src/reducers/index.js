@@ -86,7 +86,7 @@ function applyShiftRight(state, action){
 		// 4. Update own item entry:
 		const itemsUpdate = Object.assign({}, state.items,
 			{
-				[ownId]: Object.assign({}, state.items[ownId], {parent: [siblingId]})
+				[ownId]: Object.assign({}, state.items[ownId], {parent: siblingId})
 			}
 		)
 		return {items: itemsUpdate, itemOnItems: itemOnItemsUpdate, focus: {id: ownId, cursorPosition: action.cursorPosition}}
