@@ -13,6 +13,20 @@ function handleKeyDown(e, props) {
 				cursorPosition: offset,
 				parent: props.parent
 			}
+		case('Tab'):
+			e.preventDefault()
+			let type
+			if(e.shiftKey){
+				type = "SHIFT_ITEM_LEFT"
+			} else {
+				type = "SHIFT_ITEM_RIGHT"
+			}
+			return {
+				type: type,
+				id: props.id,
+				cursorPosition: offset,
+				parent: props.parent
+			}
 		default:
 			const text = e.target.innerText
 			const action =  {

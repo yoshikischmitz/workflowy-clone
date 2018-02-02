@@ -47,9 +47,10 @@ function generateInitialState(){
 
 const initialState = generateInitialState()
 
-
 function listApp(state = initialState, action){
   const id = action.id
+	const focus = state.focus
+
 	switch(action.type){
 	case('ADD_ITEM'):
 			const parent = action.parent
@@ -73,10 +74,9 @@ function listApp(state = initialState, action){
 				[newItemBottom.id]: newItemBottom
 			}
 
-			let itemOnItemsUpdate
-
 			const currentItemChildrenCount = state.itemOnItems[id].length
 
+			let itemOnItemsUpdate
 			if(right.length === 0 && currentItemChildrenCount > 0){
 				const itemsOfItem = state.itemOnItems[id]
 				const updateChildItemOnItems = insertAt(itemsOfItem, itemsOfItem[0], newItemBottom.id, 0)
@@ -89,18 +89,46 @@ function listApp(state = initialState, action){
 			}
 
 			const newItems =  Object.assign({}, state.items, itemsUpdate)
-			const focusUpdate = {focus: {id: newItemBottom.id, cursorPosition: 0}}
+
+			let focusUpdate
+			if(action.cursorPosition === 0){
+			  focusUpdate = {focus: {id: id, cursorPosition: 0}}
+			} else {
+			  focusUpdate = {focus: {id: newItemBottom.id, cursorPosition: 0}}
+			}
+
 			return Object.assign({}, state, {items: newItems}, {itemOnItems: itemOnItemsUpdate}, focusUpdate)
   case('EDIT_ITEM'):
-			//const content = state.items[id].content
-			//const offset = action.cursorPosition
-			//const newContent = content.slice(0, offset) + action.char + content.slice(offset, content.length)
 			const itemEditUpdate = {
 				[id]: {content: action.content, id: id}
 			}
 			const itemsEditUpdate = Object.assign({}, state.items, itemEditUpdate)
 
 			return Object.assign({}, state, {items: itemsEditUpdate}, {focus: {id: id, cursorPosition: action.cursorPosition }})
+	case("SHIFT_ITEM_LEFT"):
+			// when we shift left, we get parented to 
+			// our parent's parent if there is such a node(i.e. exclude root)
+			return state
+	case("SHIFT_ITEM_RIGHT"):
+			// when we shift right, we get parented to the sibling above us
+			// if there is such a sibling
+			const siblings = Object.assign([], state.itemOnItems[action.parent])
+			const ownIndex = siblings.findIndex((x) => x === id)
+
+			if(ownIndex > 0){
+				// remove self from current siblings
+				const siblingIndex = ownIndex - 1
+				const siblingId = siblings[siblingIndex]
+				siblings.splice(ownIndex, 1)
+				// parent self to the sibling
+				const siblingChildren = Object.assign([], state.itemOnItems[siblingId])
+				siblingChildren.push(id)
+				// assign the update to itemOnItems:
+				const itemOnItemsUpdate = Object.assign({}, state.itemOnItems, {[siblingId]: siblingChildren, [action.parent]: siblings})
+				return Object.assign({}, state, {itemOnItems: itemOnItemsUpdate})
+			} else {
+				return state
+			}
 	default:
 			return state
 	}
