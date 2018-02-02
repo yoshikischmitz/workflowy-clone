@@ -33,7 +33,8 @@ function handleKeyDown(e, props) {
 				type: 'EDIT_ITEM',
 				id: props.id,
 				content: e.target.innerText,
-				cursorPosition: offset
+				cursorPosition: offset,
+				parent: props.parent
 			}
 			return action
 	}

@@ -1,9 +1,10 @@
 import uuid from 'uuid'
 
-function listItem(content){
+function listItem(content, parentId){
 	return {
 		id: uuid(),
-		content: content
+		content: content,
+		parent: parentId
 	}
 }
 
@@ -15,16 +16,89 @@ function insertAt(arr, findObj, insertObj, offset){
 	return newArr
 }
 
+function findChildIndex(itemOnItems, parentId, childId) {
+	return itemOnItems[parentId].indexOf(childId)
+}
+
+function removeChild(itemOnItems, parent, child){
+	const childIndex = findChildIndex(itemOnItems, parent, child)
+	const siblings = Object.assign([], itemOnItems[parent])
+	siblings.splice(childIndex, 1)
+	return siblings
+}
+
+function applyShiftLeft(state, action){
+	// When we shift left, we get parented to our grandparent,
+	// if such a node exists. If it does, in the grandparent's 
+	// list of children, we should appear immediately after 
+	// our parent
+	
+	// 1. Find grandparent:
+	const ownId = action.id
+	const parent = action.parent
+	const grandparent = state.items[parent].parent
+
+	if(grandparent){
+		// 2. grandparent exists, remove self from parent's list
+		// of children:
+		let parentChildrenUpdate = removeChild(state.itemOnItems, parent, ownId)
+		// 3. become child of grandparent:
+		const grandparentChildrenUpdate = insertAt(state.itemOnItems[grandparent], parent, ownId, 1)
+		// 4. update our entry in items:
+		const ownUpdate = Object.assign({}, state.items[ownId], {parent: grandparent})
+		const itemsUpdate = Object.assign({}, state.items, {[ownId]: ownUpdate})
+
+		const itemOnItemsUpdate = Object.assign({}, state.itemOnItems, {
+			[grandparent]: grandparentChildrenUpdate,
+			[parent]: parentChildrenUpdate
+		})
+
+		return Object.assign({}, state, {items: itemsUpdate, itemOnItems: itemOnItemsUpdate})
+	} else {
+		return {}
+	}
+}
+
+function applyShiftRight(state, action){
+	// when we shift right, we get parented to the sibling above us
+	// if there is such a sibling
+	const ownId = action.id
+	const siblings = Object.assign([], state.itemOnItems[action.parent])
+	const ownIndex = findChildIndex(state.itemOnItems, action.parent, ownId)
+
+	const precedingSiblingsExist = ownIndex > 0
+	if(precedingSiblingsExist){
+		// Reparent the current node to the immediately 
+		// preceding sibling:
+		// 1. parent self to the upper sibling
+		const siblingIndex = ownIndex - 1
+		const siblingId = siblings[siblingIndex]
+		const siblingChildren = Object.assign([], state.itemOnItems[siblingId])
+		siblingChildren.push(ownId)
+		// 2. remove self from current parent
+		siblings.splice(ownIndex, 1)
+		// 3. assign the update to itemOnItems:
+		const itemOnItemsUpdate = Object.assign({}, state.itemOnItems, 
+			{
+				[siblingId]: siblingChildren, 
+				[action.parent]: siblings
+			})
+		return {itemOnItems: itemOnItemsUpdate}
+	} else {
+		return {}
+	}
+}
+
 function generateInitialState(){
-	let root = listItem("ルート")
-	let child = listItem("レベル１")
-	let child2 = listItem("レベル１")
-	let subChild = listItem("レベル２")
-	let subSubChild = listItem("レベル２")
-	let subSubSubChild = listItem("レベル３")
+	let root = listItem("ルート", null)
+	let child = listItem("レベル１", root.id)
+	let child2 = listItem("レベル１", root.id)
+	let child2Child1 = listItem("レベル２", child2.id)
+	let child2Child1Child = listItem("レベル３", child2Child1.id)
+	let child2Child2 = listItem("レベル２", child2.id)
 
 	let map = {}
-	let items = [root, child, child2, subChild, subSubChild, subSubSubChild]
+	let items = [root, child, child2, child2Child1, child2Child2, child2Child1Child]
 
   items.forEach((item) => {
 		map[item.id] = item
@@ -36,11 +110,11 @@ function generateInitialState(){
 		focus: {id: root.id, cursorPosition: 0},
 		itemOnItems:{
 			[root.id]: [child.id, child2.id],
-			[child.id]: [subChild.id, subSubChild.id],
-			[child2.id]: [],
-			[subChild.id]: [],
-			[subSubChild.id]: [subSubSubChild.id],
-			[subSubSubChild.id]: []
+			[child.id]: [],
+			[child2.id]: [child2Child1.id, child2Child2.id],
+			[child2Child2.id]: [],
+			[child2Child1.id]: [child2Child1Child.id],
+			[child2Child1Child.id]: []
 		}
 	}
 }
@@ -61,11 +135,13 @@ function listApp(state = initialState, action){
 
 			const newItemTop = {
 				content: left,
+				parent: parent,
 				id: id
 			}
 
 			const newItemBottom = {
 				content: right,
+				parent: parent,
 				id: uuid()
 			}
 
@@ -100,35 +176,15 @@ function listApp(state = initialState, action){
 			return Object.assign({}, state, {items: newItems}, {itemOnItems: itemOnItemsUpdate}, focusUpdate)
   case('EDIT_ITEM'):
 			const itemEditUpdate = {
-				[id]: {content: action.content, id: id}
+				[id]: {content: action.content, id: id, parent: action.parent}
 			}
 			const itemsEditUpdate = Object.assign({}, state.items, itemEditUpdate)
 
 			return Object.assign({}, state, {items: itemsEditUpdate}, {focus: {id: id, cursorPosition: action.cursorPosition }})
 	case("SHIFT_ITEM_LEFT"):
-			// when we shift left, we get parented to 
-			// our parent's parent if there is such a node(i.e. exclude root)
-			return state
+			return Object.assign({}, state, applyShiftLeft(state, action))
 	case("SHIFT_ITEM_RIGHT"):
-			// when we shift right, we get parented to the sibling above us
-			// if there is such a sibling
-			const siblings = Object.assign([], state.itemOnItems[action.parent])
-			const ownIndex = siblings.findIndex((x) => x === id)
-
-			if(ownIndex > 0){
-				// remove self from current siblings
-				const siblingIndex = ownIndex - 1
-				const siblingId = siblings[siblingIndex]
-				siblings.splice(ownIndex, 1)
-				// parent self to the sibling
-				const siblingChildren = Object.assign([], state.itemOnItems[siblingId])
-				siblingChildren.push(id)
-				// assign the update to itemOnItems:
-				const itemOnItemsUpdate = Object.assign({}, state.itemOnItems, {[siblingId]: siblingChildren, [action.parent]: siblings})
-				return Object.assign({}, state, {itemOnItems: itemOnItemsUpdate})
-			} else {
-				return state
-			}
+			return Object.assign({}, state, applyShiftRight(state, action))
 	default:
 			return state
 	}
