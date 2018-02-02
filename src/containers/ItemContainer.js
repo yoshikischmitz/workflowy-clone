@@ -1,6 +1,10 @@
 import {connect} from 'react-redux'
 import Item from '../components/Item'
 import React from 'react'
+import ReactDOM from 'react-dom'
+
+function handleInput(e, props){
+}
 
 function handleKeyDown(e, props) {
 	const offset = window.getSelection().anchorOffset
@@ -28,15 +32,7 @@ function handleKeyDown(e, props) {
 				parent: props.parent
 			}
 		default:
-			const text = e.target.innerText
-			const action =  {
-				type: 'EDIT_ITEM',
-				id: props.id,
-				content: e.target.innerText,
-				cursorPosition: offset,
-				parent: props.parent
-			}
-			return action
+			return null
 	}
 }
 
@@ -65,12 +61,24 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
 	return {
-		handleKeyDown: (e, value) =>{
+		handleKeyDown: (e) => {
 		  const action = handleKeyDown(e, ownProps)
 
 			if(action){
 				dispatch(action)
 			}
+		},
+		handleInput: (e) => {
+			const offset = window.getSelection().anchorOffset
+			const text = e.target.innerText
+			const action =  {
+				type: 'EDIT_ITEM',
+				id: ownProps.id,
+				content: text,
+				cursorPosition: offset,
+				parent: ownProps.parent
+			}
+			dispatch(action)
 		}
 	}
 }

@@ -33,6 +33,7 @@ class Item extends React.Component {
 					className="itemListEditor" 
 					ref={function(e){if(e != null) e.contentEditable=true;}} 
 					onKeyDown={this.props.handleKeyDown}
+					onInput={this.props.handleInput}
 				>
 					 { this.props.content }
 				</div>
