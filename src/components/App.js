@@ -12,9 +12,11 @@ export default class App extends React.Component{
 
 	render(){
 		return(
-			<div>
-				<RootItem />
-			</div>
+			<div className="appContainer">
+				<div className="app">
+					<RootItem />
+				</div>
+		  </div>
 		)
 	}
 }

@@ -53,7 +53,7 @@ function applyShiftLeft(state, action){
 			[parent]: parentChildrenUpdate
 		})
 
-		return Object.assign({}, state, {items: itemsUpdate, itemOnItems: itemOnItemsUpdate})
+		return {items: itemsUpdate, itemOnItems: itemOnItemsUpdate, focus: {id: ownId, cursorPosition: action.cursorPosition}}
 	} else {
 		return {}
 	}
@@ -89,22 +89,22 @@ function applyShiftRight(state, action){
 				[ownId]: Object.assign({}, state.items[ownId], {parent: [siblingId]})
 			}
 		)
-		return {items: itemsUpdate, itemOnItems: itemOnItemsUpdate}
+		return {items: itemsUpdate, itemOnItems: itemOnItemsUpdate, focus: {id: ownId, cursorPosition: action.cursorPosition}}
 	} else {
 		return {}
 	}
 }
 
 function generateInitialState(){
-	let root = listItem("ルート", null)
-	let child = listItem("レベル１", root.id)
+	let root = listItem("", null)
+	let child = listItem("", root.id)
 	let child2 = listItem("レベル１", root.id)
 	let child2Child1 = listItem("レベル２", child2.id)
 	let child2Child1Child = listItem("レベル３", child2Child1.id)
 	let child2Child2 = listItem("レベル２", child2.id)
 
 	let map = {}
-	let items = [root, child, child2, child2Child1, child2Child2, child2Child1Child]
+	let items = [root, child]
 
   items.forEach((item) => {
 		map[item.id] = item
@@ -113,14 +113,10 @@ function generateInitialState(){
 	return {
 		items: map,
 		root: root.id,
-		focus: {id: root.id, cursorPosition: 0},
+		focus: {id: child.id, cursorPosition: 0},
 		itemOnItems:{
-			[root.id]: [child.id, child2.id],
-			[child.id]: [],
-			[child2.id]: [child2Child1.id, child2Child2.id],
-			[child2Child2.id]: [],
-			[child2Child1.id]: [child2Child1Child.id],
-			[child2Child1Child.id]: []
+			[root.id]: [child.id],
+			[child.id]: []
 		}
 	}
 }
@@ -191,6 +187,30 @@ function listApp(state = initialState, action){
 			return Object.assign({}, state, applyShiftLeft(state, action))
 	case("SHIFT_ITEM_RIGHT"):
 			return Object.assign({}, state, applyShiftRight(state, action))
+	case("MOVE_FOCUS_UP"):
+			// change the focus to the node that is visually immediately above the current node
+			// 1. find the immediately preceding sibling of the current node:
+			if(action.parent){
+				const siblings = state.itemOnItems[action.parent]
+				const ownIndex = siblings.indexOf(action.id)
+				if(siblings.length > 1 && ownIndex > 0){
+					let nearestRelative = siblings[ownIndex - 1]
+					let relativeChildren = state.itemOnItems[nearestRelative]
+					// 2. Go through the last child of each relative, finding a child that has no children of its own:
+					while(relativeChildren.length !== 0){
+						nearestRelative = state.itemOnItems[nearestRelative][relativeChildren.length - 1]
+						relativeChildren = state.itemOnItems[nearestRelative]
+					}
+					return Object.assign({}, state, {focus: {id: nearestRelative, cursorPosition: 0}})
+				} else {
+					// 2. Go to our parent:
+					return Object.assign({}, state, {focus: {id: action.parent, cursorPosition: 0}})
+				}
+			} else {
+				return state
+			}
+	case("CHANGE_FOCUS"):
+			return Object.assign({}, state, {focus: {id: action.id, cursorPosition: action.cursorPosition}})
 	default:
 			return state
 	}

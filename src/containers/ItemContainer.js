@@ -3,9 +3,6 @@ import Item from '../components/Item'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-function handleInput(e, props){
-}
-
 function handleKeyDown(e, props) {
 	const offset = window.getSelection().anchorOffset
 	switch(e.key){
@@ -30,6 +27,18 @@ function handleKeyDown(e, props) {
 				id: props.id,
 				cursorPosition: offset,
 				parent: props.parent
+			}
+		case('ArrowUp'):
+			e.preventDefault()
+			return {
+				type: 'MOVE_FOCUS_UP',
+				id: props.id,
+				parent: props.parent
+			}
+		case('ArrowDown'):
+			return {
+				type: 'MOVE_FOCUS_DOWN',
+				id: props.id
 			}
 		default:
 			return null
@@ -63,7 +72,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 	return {
 		handleKeyDown: (e) => {
 		  const action = handleKeyDown(e, ownProps)
-
 			if(action){
 				dispatch(action)
 			}
@@ -79,6 +87,16 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 				parent: ownProps.parent
 			}
 			dispatch(action)
+		},
+		handleBlur: (e) => {
+			const offset = window.getSelection().anchorOffset
+			dispatch(
+				{
+					type: 'CHANGE_FOCUS',
+					id: ownProps.id,
+					cursorPosition: offset
+				}
+			)
 		}
 	}
 }

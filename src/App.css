@@ -1,9 +1,49 @@
+.itemBullet{
+	width: 0.4em;
+	height: 0.4em;
+	float: left;
+	display: block;
+  border-radius: 50%;
+	background-color: #6BAAFF;
+	margin-top: 0.25em;
+	margin-right: 0.5em;
+}
+
+:focus { outline: none; }
+
 .itemListEditor{
   min-height: 1.2em;
+	white-space: pre-wrap;
 }
 
 .itemListChildren{
   border-left: 1px solid #eee;
   margin-left: 10px;
   padding-left: 15px;
+}
+
+.app {
+	width: 700px;
+	min-height: 700px;
+	margin: auto;
+	margin-top: 2rem;
+	margin-bottom: 10rem;
+	border: 1px solid #FF8AEC;
+	border-radius: 0.3rem;
+	padding: 30px 60px 10px;
+	background-color: #fff;
+  box-shadow: 0px 0px 20px -5px rgba(0, 0, 0, 0.5);
+}
+
+body{
+	background-color: rgba(0, 0, 0, 0);
+	background:linear-gradient(45deg, #13f1fc 0%,#0470dc 100%);
+	background-repeat: repeat;
+	background-attachment: fixed;
+	background-clip: border-box;
+	background-origin: padding-box;
+	background-position-x: center;
+	background-position-y: center;
+	background-size: auto auto;
+	font-family: 'Quattrocento Sans', sans-serif;
 }
