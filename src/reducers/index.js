@@ -209,6 +209,29 @@ function listApp(state = initialState, action){
 			} else {
 				return state
 			}
+	case("MOVE_FOCUS_DOWN"):
+			// change the focus to the node that is visually immediately below the current node
+			if(action.parent){
+				const ownChildren = state.itemOnItems[action.id]
+				if(ownChildren.length > 0){
+					return Object.assign({}, state, {focus: {id: ownChildren[0], cursorPosition: 0}})
+				} else {
+					let currentNode = action.id
+					let siblings = state.itemOnItems[action.parent]
+					let currentNodeIndex = siblings.indexOf(currentNode)
+					while(siblings && currentNodeIndex === siblings.length - 1){
+						currentNode = state.items[currentNode].parent
+						siblings = state.itemOnItems[state.items[currentNode].parent]
+						if(!siblings) 
+							return state
+						currentNodeIndex = siblings.indexOf(currentNode)
+					}
+					const newFocus = siblings[currentNodeIndex + 1]
+					return Object.assign({}, state, {focus: {id: newFocus, cursorPosition: 0}})
+				}
+			} else {
+				return state
+			}
 	case("CHANGE_FOCUS"):
 			return Object.assign({}, state, {focus: {id: action.id, cursorPosition: action.cursorPosition}})
 	default:

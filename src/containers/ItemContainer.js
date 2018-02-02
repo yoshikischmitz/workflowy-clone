@@ -36,9 +36,11 @@ function handleKeyDown(e, props) {
 				parent: props.parent
 			}
 		case('ArrowDown'):
+			e.preventDefault()
 			return {
 				type: 'MOVE_FOCUS_DOWN',
-				id: props.id
+				id: props.id,
+				parent: props.parent
 			}
 		default:
 			return null
