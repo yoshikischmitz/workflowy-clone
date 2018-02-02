@@ -169,7 +169,7 @@ function listApp(state = initialState, action){
 			const newItems =  Object.assign({}, state.items, itemsUpdate)
 
 			let focusUpdate
-			if(action.cursorPosition === 0){
+			if(action.cursorPosition === 0 && originalItem.content.length > 0){
 			  focusUpdate = {focus: {id: id, cursorPosition: 0}}
 			} else {
 			  focusUpdate = {focus: {id: newItemBottom.id, cursorPosition: 0}}
