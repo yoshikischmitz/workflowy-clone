@@ -25,38 +25,42 @@ You can delete items by either clicking on the “delete” button in the item�
 ```
 
 ## Tasks
-+ normalize data
-+ Use containers
-+ get rendering working
-+ handle new nodes
-	+ support splitting existing nodes by hitting return in the middle of their content
-	+ support adding new nodes by pressing enter at the end of the content of an existing node
-	+ when the current node has no children, the new node should be a child of the current node’s parent
-+ Editing node content
-	+ Restore cursor position when components are re-rendered
-		+ keep track of cursor position at all times
-	+ Allow insertion of whitespace correctly at end of node
-+ Move items left and right with `tab` and `shift` `+` `tab`
-	+ move right
-	+ move left
-		+ Figure out a good way to make grandparent discovery easy
+- [x] normalize data
+- [x] Use containers
+- [x] get rendering working
+- [x] handle new nodes
+	- [x] support splitting existing nodes by hitting return in the middle of their content
+	- [x] support adding new nodes by pressing enter at the end of the content of an existing node
+	- [x] when the current node has no children, the new node should be a child of the current node’s parent
+- [x] Editing node content
+	- [x] Restore cursor position when components are re-rendered
+		- [x] keep track of cursor position at all times
+	- [x] Allow insertion of whitespace correctly at end of node
+- [x] Move items left and right with `tab` and `shift` `+` `tab`
+	- [x] move right
+	- [x] move left
+		- [x] Figure out a good way to make grandparent discovery easy
 		options:
 			* child -> parent index
 			* add parent attribute to each node in the state
 				* I’m gonna go with this for now
-	+ shifting indentation when focused should limit movement to the current scope
+	- [x] shifting indentation when focused should limit movement to the current scope
 	FIX: check if parent is root
-- Fix backspace on selections
-	- Use onInput
-- Backspace on an empty item with no children should delete that entry
-	* can’t delete when self is root
-	* problem: props in item container aren’t aware of content and child nodes
-+ Update the focused element in the state when an item is clicked on or a key is changed
-+ Move around with the up and down keys
-- Allow hiding and unhiding
-- undo/redo
-+ add bullet icon next to note
-- dates
+- [ ] Fix backspace on selections
+	- [ ] Use onInput
+- [x] Backspace on an empty item with no children should delete that entry
+	* focus changes to the item above it, with the cursor at the end
+	* if there is no item above it, then change focus to the one below it, with the cursor at the start
+	* if there are no items above or below, then we can’t delete
+	* we also can’t delete when self is root
+- [x] Update the focused element in the state when an item is clicked on or a key is changed
+- [x] Move around with the up and down keys
+- [ ] Allow hiding and unhiding
+- [ ] undo/redo
+- [x] add bullet icon next to note
+- [ ] dates
+## Bugs
+* For some reason new items have invisible `\n`s inside of them. 
 
 ## Notes
 ### Moving up:
