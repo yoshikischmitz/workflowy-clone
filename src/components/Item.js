@@ -28,8 +28,8 @@ class Item extends React.Component {
 
 	render(){
 		return(
-			<div>
-				<div className={this.props.parent && "itemBullet"} />
+			<div className="item">
+				<div onClick={this.props.handleBulletClick} className={this.props.parent && "itemBullet"} />
 				<div 
 					className="itemListEditor" 
 					ref={function(e){if(e != null) e.contentEditable=true;}} 

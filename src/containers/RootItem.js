@@ -1,11 +1,11 @@
 import {connect} from 'react-redux'
 import ItemContainer from './ItemContainer'
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
 	return {
 		id: state.root,
 		depth: 0,
-		parent: null
+		parent: state.items[state.root].parent
 	}
 }
 

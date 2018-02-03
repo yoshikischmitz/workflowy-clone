@@ -60,7 +60,8 @@ const mapStateToProps = (state, ownProps) => {
 	const myProps = {
 		id: ownProps.id,
 		content: item.content,
-		children: childNodes
+		children: childNodes,
+		parent: ownProps.parent
 	}
 
 	if(state.focus.id === id){
@@ -95,6 +96,16 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 			dispatch(
 				{
 					type: 'CHANGE_FOCUS',
+					id: ownProps.id,
+					cursorPosition: offset
+				}
+			)
+		},
+		handleBulletClick: (e) => {
+			const offset = window.getSelection().anchorOffset
+			dispatch(
+				{
+					type: "CHANGE_ROOT",
 					id: ownProps.id,
 					cursorPosition: offset
 				}

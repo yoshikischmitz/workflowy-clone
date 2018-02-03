@@ -155,7 +155,7 @@ function listApp(state = initialState, action){
 			const currentItemChildrenCount = state.itemOnItems[id].length
 
 			let itemOnItemsUpdate
-			if(right.length === 0 && currentItemChildrenCount > 0){
+			if(state.root === id || (right.length === 0 && currentItemChildrenCount > 0)){
 				const itemsOfItem = state.itemOnItems[id]
 				const updateChildItemOnItems = insertAt(itemsOfItem, itemsOfItem[0], newItemBottom.id, 0)
 				itemOnItemsUpdate = Object.assign({}, state.itemOnItems, {[id]: updateChildItemOnItems}, {[newItemBottom.id]: []})
@@ -234,6 +234,8 @@ function listApp(state = initialState, action){
 			}
 	case("CHANGE_FOCUS"):
 			return Object.assign({}, state, {focus: {id: action.id, cursorPosition: action.cursorPosition}})
+  case("CHANGE_ROOT"):
+			return Object.assign({}, state, {root: action.id}, {focus: {id: action.id, cursorPosition: action.cursorPosition}})
 	default:
 			return state
 	}
