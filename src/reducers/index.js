@@ -258,8 +258,22 @@ function listApp(state = initialState, action){
   case("CHANGE_ROOT"):
 			return Object.assign({}, state, {root: action.id}, {focus: {id: action.id, cursorPosition: action.cursorPosition}})
   case("DELETE_ITEM"):
-			// 1. check that the item has no children:
-			if(state.itemOnItems[id].length === 0){
+			let newFocus
+			const nodeAbove = findNodeAbove(state, id)
+			let newCursorPosition = 0
+			if(state.items[nodeAbove].parent){
+				newFocus = nodeAbove
+				newCursorPosition = state.items[nodeAbove].content.length
+			} else {
+				const nodeBelow = findNodeBelow(state, id)
+				if(nodeBelow){
+					newFocus = nodeBelow
+				}
+			}
+
+			// 1. check that the item has no children, 
+			// and that we have somewhere to put the cursor on after deletion
+			if(state.itemOnItems[id].length === 0 && newFocus){
 				// 2. delete item from the main dictionary:
 				const itemsDeleteUpdate = Object.assign({}, state.items)
 				delete(itemsDeleteUpdate[id])
@@ -269,7 +283,11 @@ function listApp(state = initialState, action){
 				siblings.splice(ownIndex, 1) // update siblings
 				const itemOnItemsDeleteUpdate = Object.assign({}, state.itemOnItems, {[parent]: siblings})
 
-				return Object.assign({}, {items: itemsDeleteUpdate}, {itemOnItems: itemOnItemsDeleteUpdate}, {focus: state.focus}, {root: state.root})
+				return Object.assign({}, 
+					{items: itemsDeleteUpdate}, 
+					{itemOnItems: itemOnItemsDeleteUpdate}, 
+					{focus: {id: newFocus, cursorPosition: newCursorPosition}}, 
+					{root: state.root})
 			} else {
 				// nothing to do:
 				return state

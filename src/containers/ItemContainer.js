@@ -44,6 +44,7 @@ function handleKeyDown(e, props) {
 			}
 		case('Backspace'):
 			if(props.content === "\n" || (props.content.length === 0 && props.children.length === 0)){
+				e.preventDefault()
 				return {
 					type: "DELETE_ITEM",
 					id: props.id,
