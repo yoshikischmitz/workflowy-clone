@@ -141,7 +141,7 @@ function applyShiftRight(state, action){
 }
 
 function generateInitialState(){
-	let root = listItem("", null)
+	let root = listItem("Home", null)
 	let child = listItem("", root.id)
 	let child2 = listItem("レベル１", root.id)
 	let child2Child1 = listItem("レベル２", child2.id)
@@ -258,6 +258,10 @@ function listApp(state = initialState, action){
   case("CHANGE_ROOT"):
 			return Object.assign({}, state, {root: action.id}, {focus: {id: action.id, cursorPosition: action.cursorPosition}})
   case("DELETE_ITEM"):
+			if(state.root === id){
+				return state
+			}
+
 			let newFocus
 			const nodeAbove = findNodeAbove(state, id)
 			let newCursorPosition = 0

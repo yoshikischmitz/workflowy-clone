@@ -1,5 +1,6 @@
 import React from 'react'
 import RootItem from '../containers/RootItem'
+import HeaderBreadCrumb from '../containers/HeaderBreadCrumb'
 import '../App.css'
 
 export default class App extends React.Component{
@@ -14,6 +15,7 @@ export default class App extends React.Component{
 		return(
 			<div className="appContainer">
 				<div className="app">
+				  <HeaderBreadCrumb />
 					<RootItem />
 				</div>
 		  </div>
