@@ -33,7 +33,7 @@ class Item extends React.Component {
 				<div 
 					className="itemListEditor" 
 					ref={function(e){if(e != null) e.contentEditable=true;}} 
-					onKeyDown={this.props.handleKeyDown}
+					onKeyDown={(e) => this.props.handleKeyDown(e, this.props)}
 					onInput={this.props.handleInput}
 					onFocus={this.props.handleBlur}
 					onClick={this.props.handleBlur}

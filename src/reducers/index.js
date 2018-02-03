@@ -27,6 +27,50 @@ function removeChild(itemOnItems, parent, child){
 	return siblings
 }
 
+function findNodeAbove(state, nodeId){
+	const parent = state.items[nodeId].parent
+	const siblings = state.itemOnItems[parent]
+	const ownIndex = siblings.indexOf(nodeId)
+
+	if(siblings.length > 1 && ownIndex > 0){
+		let nearestRelative = siblings[ownIndex - 1]
+		let relativeChildren = state.itemOnItems[nearestRelative]
+		// 2. Go through the last child of each relative, finding a child that has no children of its own:
+		while(relativeChildren.length !== 0){
+			nearestRelative = state.itemOnItems[nearestRelative][relativeChildren.length - 1]
+			relativeChildren = state.itemOnItems[nearestRelative]
+		}
+		return nearestRelative
+	} else {
+		// 2. Go to our parent:
+		return parent
+	}
+}
+
+function findNodeBelow(state, nodeId){
+	const ownChildren = state.itemOnItems[nodeId]
+	const parent = state.items[nodeId].parent
+
+	if(ownChildren.length > 0){
+		return ownChildren[0]
+	} else {
+		let currentNode = nodeId
+		let siblings = state.itemOnItems[parent]
+		let currentNodeIndex = siblings.indexOf(currentNode)
+
+		while(siblings && currentNodeIndex === siblings.length - 1){
+			currentNode = state.items[currentNode].parent
+			siblings = state.itemOnItems[state.items[currentNode].parent]
+			if(!siblings) 
+				return null
+			currentNodeIndex = siblings.indexOf(currentNode)
+		}
+
+		const newFocus = siblings[currentNodeIndex + 1]
+		return newFocus
+	}
+}
+
 function applyShiftLeft(state, action){
 	// When we shift left, we get parented to our grandparent,
 	// if such a node exists. If it does, in the grandparent's 
@@ -38,7 +82,8 @@ function applyShiftLeft(state, action){
 	const parent = action.parent
 	const grandparent = state.items[parent].parent
 
-	if(grandparent){
+	// Make sure the parent isn't root:
+	if(grandparent && parent !== state.root){
 		// 2. grandparent exists, remove self from parent's list
 		// of children:
 		let parentChildrenUpdate = removeChild(state.itemOnItems, parent, ownId)
@@ -125,11 +170,11 @@ const initialState = generateInitialState()
 
 function listApp(state = initialState, action){
   const id = action.id
+	const parent = action.parent
 	const focus = state.focus
 
 	switch(action.type){
 	case('ADD_ITEM'):
-			const parent = action.parent
 			const cursorPosition = action.cursorPosition
 			const originalItem = state.items[id]
 			const left = originalItem.content.slice(0, cursorPosition)
@@ -191,43 +236,19 @@ function listApp(state = initialState, action){
 			// change the focus to the node that is visually immediately above the current node
 			// 1. find the immediately preceding sibling of the current node:
 			if(action.parent){
-				const siblings = state.itemOnItems[action.parent]
-				const ownIndex = siblings.indexOf(action.id)
-				if(siblings.length > 1 && ownIndex > 0){
-					let nearestRelative = siblings[ownIndex - 1]
-					let relativeChildren = state.itemOnItems[nearestRelative]
-					// 2. Go through the last child of each relative, finding a child that has no children of its own:
-					while(relativeChildren.length !== 0){
-						nearestRelative = state.itemOnItems[nearestRelative][relativeChildren.length - 1]
-						relativeChildren = state.itemOnItems[nearestRelative]
-					}
-					return Object.assign({}, state, {focus: {id: nearestRelative, cursorPosition: 0}})
-				} else {
-					// 2. Go to our parent:
-					return Object.assign({}, state, {focus: {id: action.parent, cursorPosition: 0}})
-				}
+				const nearestRelative = findNodeAbove(state, id)
+				return Object.assign({}, state, {focus: {id: nearestRelative, cursorPosition: 0}})
 			} else {
 				return state
 			}
 	case("MOVE_FOCUS_DOWN"):
 			// change the focus to the node that is visually immediately below the current node
-			if(action.parent){
-				const ownChildren = state.itemOnItems[action.id]
-				if(ownChildren.length > 0){
-					return Object.assign({}, state, {focus: {id: ownChildren[0], cursorPosition: 0}})
+			if(parent){
+				const newFocus = findNodeBelow(state, id)
+				if(newFocus){
+          return Object.assign({}, state, {focus: {id: newFocus, cursorPosition: 0}})
 				} else {
-					let currentNode = action.id
-					let siblings = state.itemOnItems[action.parent]
-					let currentNodeIndex = siblings.indexOf(currentNode)
-					while(siblings && currentNodeIndex === siblings.length - 1){
-						currentNode = state.items[currentNode].parent
-						siblings = state.itemOnItems[state.items[currentNode].parent]
-						if(!siblings) 
-							return state
-						currentNodeIndex = siblings.indexOf(currentNode)
-					}
-					const newFocus = siblings[currentNodeIndex + 1]
-					return Object.assign({}, state, {focus: {id: newFocus, cursorPosition: 0}})
+					return state
 				}
 			} else {
 				return state
@@ -236,6 +257,23 @@ function listApp(state = initialState, action){
 			return Object.assign({}, state, {focus: {id: action.id, cursorPosition: action.cursorPosition}})
   case("CHANGE_ROOT"):
 			return Object.assign({}, state, {root: action.id}, {focus: {id: action.id, cursorPosition: action.cursorPosition}})
+  case("DELETE_ITEM"):
+			// 1. check that the item has no children:
+			if(state.itemOnItems[id].length === 0){
+				// 2. delete item from the main dictionary:
+				const itemsDeleteUpdate = Object.assign({}, state.items)
+				delete(itemsDeleteUpdate[id])
+				// 3. delete item from the child array of the parrent:
+				let siblings = Object.assign([], state.itemOnItems[parent])
+				const ownIndex = siblings.indexOf(id)
+				siblings.splice(ownIndex, 1) // update siblings
+				const itemOnItemsDeleteUpdate = Object.assign({}, state.itemOnItems, {[parent]: siblings})
+
+				return Object.assign({}, {items: itemsDeleteUpdate}, {itemOnItems: itemOnItemsDeleteUpdate}, {focus: state.focus}, {root: state.root})
+			} else {
+				// nothing to do:
+				return state
+			}
 	default:
 			return state
 	}

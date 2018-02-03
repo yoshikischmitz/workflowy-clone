@@ -42,6 +42,14 @@ function handleKeyDown(e, props) {
 				id: props.id,
 				parent: props.parent
 			}
+		case('Backspace'):
+			if(props.content === "\n" || (props.content.length === 0 && props.children.length === 0)){
+				return {
+					type: "DELETE_ITEM",
+					id: props.id,
+					parent: props.parent
+				}
+			}
 		default:
 			return null
 	}
@@ -49,12 +57,11 @@ function handleKeyDown(e, props) {
 
 const mapStateToProps = (state, ownProps) => {
 	const id = ownProps.id
-	const depth = ownProps.depth + 1
 	const item = state.items[id]
 	const childrenIds = state.itemOnItems[id] || []
 
 	const childNodes = childrenIds.map((childId) => (
-			<ItemContainer key={childId} parent={id} id={childId} depth={depth}/>
+			<ItemContainer key={childId} parent={id} id={childId} />
 	))
 
 	const myProps = {
@@ -73,8 +80,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
 	return {
-		handleKeyDown: (e) => {
-		  const action = handleKeyDown(e, ownProps)
+		handleKeyDown: (e, itemProps) => {
+		  const action = handleKeyDown(e, itemProps)
 			if(action){
 				dispatch(action)
 			}
