@@ -7,7 +7,11 @@ const mapStateToProps = (state, ownProps) => {
 
 	while(state.items[currentNode].parent){
 		currentNode = state.items[currentNode].parent
-		entries.push(state.items[currentNode].content)
+		const item = state.items[currentNode]
+		entries.push({
+			id: item.id,
+			content: item.content
+		})
 	}
 
 	return {

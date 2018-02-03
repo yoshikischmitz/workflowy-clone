@@ -1,10 +1,17 @@
 import React from 'react'
+import BreadCrumbLink from './BreadCrumbLink'
 
 const BreadCrumb = ({entries}) => {
 	let breadCrumb = []
 	if(entries.length > 0){
 		entries.forEach((x) => {
-			breadCrumb.push(<a href="#"> { x } </a>)
+			breadCrumb.push(
+				<BreadCrumbLink 
+					id={ x.id }
+					key={ x.id }>
+					{ x.content }
+				</BreadCrumbLink>
+			)
 			breadCrumb.push(">")
 		})
 		breadCrumb.pop()
