@@ -27,11 +27,15 @@ class Item extends React.Component {
 	}
 
 	render(){
+		let classes = ["itemListEditor"]
+		if(this.props.root){
+			classes.push("root")
+		}
 		return(
 			<div className="item">
-				<div onClick={this.props.handleBulletClick} className={this.props.parent && "itemBullet"} />
+				<div onClick={this.props.handleBulletClick} className={!this.props.root && "itemBullet"} />
 				<div 
-					className="itemListEditor" 
+					className={classes.join(" ")} 
 					ref={function(e){if(e != null) e.contentEditable=true;}} 
 					onKeyDown={(e) => this.props.handleKeyDown(e, this.props)}
 					onInput={this.props.handleInput}
@@ -40,7 +44,7 @@ class Item extends React.Component {
 				>
 					 { this.props.content }
 				</div>
-				<div className={this.props.parent && "itemListChildren"}>
+				<div className={!this.props.root && "itemListChildren"}>
 					{ this.props.children }
 				</div>
 			</div>

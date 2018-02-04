@@ -12,7 +12,7 @@ const BreadCrumb = ({entries}) => {
 					{ x.content }
 				</BreadCrumbLink>
 			)
-			breadCrumb.push(">")
+			breadCrumb.push(<div className="breadCrumbSeparator">{">"}</div>)
 		})
 		breadCrumb.pop()
 	}

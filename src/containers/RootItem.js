@@ -5,7 +5,8 @@ const mapStateToProps = (state) => {
 	return {
 		id: state.root,
 		depth: 0,
-		parent: state.items[state.root].parent
+		parent: state.items[state.root].parent,
+		root: true
 	}
 }
 

@@ -69,7 +69,8 @@ const mapStateToProps = (state, ownProps) => {
 		id: ownProps.id,
 		content: item.content,
 		children: childNodes,
-		parent: ownProps.parent
+		parent: ownProps.parent,
+		root: ownProps.root
 	}
 
 	if(state.focus.id === id){
