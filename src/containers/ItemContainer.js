@@ -30,17 +30,35 @@ function handleKeyDown(e, props) {
 			}
 		case('ArrowUp'):
 			e.preventDefault()
-			return {
-				type: 'MOVE_FOCUS_UP',
-				id: props.id,
-				parent: props.parent
+			if(e.metaKey && e.shiftKey){
+				return {
+					type: "MOVE_ITEM",
+					id: props.id,
+					parent: props.parent,
+					offset: -1
+				}
+			} else {
+				return {
+					type: 'MOVE_FOCUS_UP',
+					id: props.id,
+					parent: props.parent
+				}
 			}
 		case('ArrowDown'):
 			e.preventDefault()
-			return {
-				type: 'MOVE_FOCUS_DOWN',
-				id: props.id,
-				parent: props.parent
+			if(e.metaKey && e.shiftKey){
+				return {
+					type: "MOVE_ITEM",
+					id: props.id,
+					parent: props.parent,
+					offset: 1
+				}
+			} else {
+				return {
+					type: 'MOVE_FOCUS_DOWN',
+					id: props.id,
+					parent: props.parent
+				}
 			}
 		case('Backspace'):
 			if(props.content === "\n" || (props.content.length === 0 && props.children.length === 0)){

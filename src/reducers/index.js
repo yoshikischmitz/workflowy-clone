@@ -72,6 +72,16 @@ function findNodeBelow(state, nodeId){
 	}
 }
 
+function moveItem(state, id, offset){
+	const parent = state.items[id].parent
+	const siblings = Object.assign([], state.itemOnItems[parent])
+	const index = siblings.indexOf(id)
+	siblings[index] = siblings[index + offset]
+	siblings[index + offset] = id
+	return Object.assign({}, state.itemOnItems, {[parent]: siblings})
+}
+
+
 function applyShiftLeft(state, action){
 	// When we shift left, we get parented to our grandparent,
 	// if such a node exists. If it does, in the grandparent's 
@@ -297,6 +307,8 @@ function listApp(state = InitialState, action){
 				// nothing to do:
 				return state
 			}
+  case("MOVE_ITEM"):
+			return Object.assign({}, state, {itemOnItems: moveItem(state, id, action.offset)})
 	default:
 			return state
 	}
