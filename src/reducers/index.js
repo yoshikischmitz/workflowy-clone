@@ -1,4 +1,5 @@
 import uuid from 'uuid'
+import InitialState from './initialState'
 
 function listItem(content, parentId){
 	return {
@@ -168,7 +169,7 @@ function generateInitialState(){
 
 const initialState = generateInitialState()
 
-function listApp(state = initialState, action){
+function listApp(state = InitialState, action){
   const id = action.id
 	const parent = action.parent
 	const focus = state.focus
