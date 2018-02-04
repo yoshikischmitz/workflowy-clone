@@ -1,4 +1,4 @@
-# Workflowy Clone Notes
+# Workflowy Redux Notes
 ## Basics
 Workflowy is a structured text editor built around lists. Lists can have sublists and those sublists in turn can have their own lists. You can “focus” on a list by clicking on it, during which point that list becomes the root list in your view(much like clicking on a folder in a file explorer). The navbar shows  where you are in the list hierarchy.
 
@@ -24,45 +24,68 @@ You can delete items by either clicking on the “delete” button in the item�
 }
 ```
 
-## Tasks
-- [x] normalize data
-- [x] Use containers
-- [x] get rendering working
-- [x] handle new nodes
-	- [x] support splitting existing nodes by hitting return in the middle of their content
-	- [x] support adding new nodes by pressing enter at the end of the content of an existing node
-	- [x] when the current node has no children, the new node should be a child of the current node’s parent
-- [x] Editing node content
-	- [x] Restore cursor position when components are re-rendered
-		- [x] keep track of cursor position at all times
-	- [x] Allow insertion of whitespace correctly at end of node
-- [x] Move items left and right with `tab` and `shift` `+` `tab`
-	- [x] move right
-	- [x] move left
-		- [x] Figure out a good way to make grandparent discovery easy
+## Programming Tasks
+### Completed: 
++ normalize data
++ Use containers
++ get rendering working
++ handle new nodes
+	+ support splitting existing nodes by hitting return in the middle of their content
+	+ support adding new nodes by pressing enter at the end of the content of an existing node
+	+ when the current node has no children, the new node should be a child of the current node’s parent
++ Editing node content
+	+ Restore cursor position when components are re-rendered
+		+ keep track of cursor position at all times
+	+ Allow insertion of whitespace correctly at end of node
++ Move items left and right with `tab` and `shift` `+` `tab`
+	+ move right
+	+ move left
+		+ Figure out a good way to make grandparent discovery easy
 		options:
 			* child -> parent index
 			* add parent attribute to each node in the state
 				* I’m gonna go with this for now
-	- [x] shifting indentation when focused should limit movement to the current scope
-	FIX: check if parent is root
-- [ ] Fix backspace on selections
-	- [ ] Use onInput
-- [x] Backspace on an empty item with no children should delete that entry
+	+ shifting indentation when focused should limit movement to the current scope FIX: check if parent is root
+
++ Backspace on an empty item with no children should delete that entry
 	* focus changes to the item above it, with the cursor at the end
 	* if there is no item above it, then change focus to the one below it, with the cursor at the start
 	* if there are no items above or below, then we can’t delete
 	* we also can’t delete when self is root
-- [x] Update the focused element in the state when an item is clicked on or a key is changed
-- [x] Move around with the up and down keys
-- [ ] Allow hiding and unhiding
-- [ ] undo/redo
-- [x] add bullet icon next to note
-- [ ] dates
++ Update the focused element in the state when an item is clicked on or a key is changed
++ Move around with the up and down keys
++ add bullet icon next to note
++ bread crumbs
+	* follow the trail of parents until we find the true root node, pushing each item to the top of an array
+	* then render that array as the breadcrumb
+	* when you click on a bread crumb link, the root will be set to the link’s id
+### Ongoing:
+- an empty list should have a `+` button at the bottom that adds an item on click
+- Notes
+- Move items around with Meta + Shift + Up
+- When you hit down at the end of a list, the cursor should go to the end of that item.
+- Hiding and unhiding
+- undo + redo
+- dates
+- - Fix backspace on selections
+	- Use onInput
+- search
+
+## Styling Tasks:
++ Top level element should have a larger font
++ top level element shouldn’t have a bullet
+- True root shouldn’t render anything
++ bullet needs outline on hover
+
 ## Bugs
 * For some reason new items have invisible `\n`s inside of them. 
-
+* When you add a new item, the cursor appears before the bullet point
 ## Notes
+### Animation:
+
+Workflowy has nice animations that make sure the user understands what is happening. The important ones are:
+* Hiding/Showing an item slowly reveals the sub-tree of items
+* Zooming into an item visually moves its entire hierarchy to the top level.
 ### Moving up:
 To move up in the list hierarchy, you want the cursor focus to change to the node visually above the current node.
 ```
