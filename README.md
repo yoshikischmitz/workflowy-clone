@@ -1,6 +1,5 @@
 # Workflowy Redux Notes
 
-<img src=""/>
 ![gif](https://i.imgur.com/WBk1NvB.gif)
 
 ## Basics
