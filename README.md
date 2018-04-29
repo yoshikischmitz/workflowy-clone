@@ -1,6 +1,6 @@
 # Workflowy Redux Notes
 
-![gif](https://i.imgur.com/WBk1NvB.gif)
+![gif](https://i.imgur.com/7F5VBhJ.png)
 
 ## Basics
 Workflowy is a structured text editor built around lists. Lists can have sublists and those sublists in turn can have their own lists. You can “focus” on a list by clicking on it, during which point that list becomes the root list in your view(much like clicking on a folder in a file explorer). The navbar shows  where you are in the list hierarchy.
